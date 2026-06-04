@@ -154,6 +154,14 @@ body { font-family: 'DM Sans', sans-serif; }
 .attach-soon { font-size: 10px; color: var(--muted); font-style: italic; }
 
 /* ── SUBMIT BUTTON ── */
+.submit-bar {
+  position: absolute;
+  bottom: calc(60px + env(safe-area-inset-bottom)); /* encima del bottom nav */
+  left: 0; right: 0;
+  padding: 10px 18px;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 35%);
+  z-index: 10;
+}
 .submit-btn {
   width: 100%; padding: 16px; border-radius: var(--radius-lg);
   background: var(--accent); border: none; color: white;
@@ -164,18 +172,16 @@ body { font-family: 'DM Sans', sans-serif; }
 .submit-btn:active { background: #991111; transform: scale(.99); }
 .submit-btn:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; transform: none; }
 
-/* sticky footer dentro del scroll — visible siempre sin tapar contenido */
-.submit-sticky {
-  position: sticky;
-  bottom: 0;
-  background: linear-gradient(to bottom, transparent 0%, var(--bg) 30%);
-  padding: 16px 0 calc(8px + env(safe-area-inset-bottom));
-  margin-top: 16px;
+/* cuando el teclado está abierto, bajar el botón al fondo directo */
+.keyboard-open #screenSignals .submit-bar {
+  bottom: env(safe-area-inset-bottom);
 }
 
 /* hide bottom nav when keyboard is open */
 .keyboard-open .bottom-nav { display: none; }
 .keyboard-open .scroll { padding-bottom: 16px; }
+
+/* submit-sticky ya no se usa */
 
 /* ── CONFIRM SCREEN ── */
 .confirm-card {
@@ -338,6 +344,8 @@ body { font-family: 'DM Sans', sans-serif; }
 
 /* add bottom padding to all scrollable areas so content clears the nav */
 .scroll { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+/* signals screen needs extra space for the submit button above the nav */
+#signalsScroll { padding-bottom: calc(140px + env(safe-area-inset-bottom)); }
 
 /* ── SETUP OVERLAY ── */
 .setup-overlay {
@@ -430,10 +438,12 @@ body { font-family: 'DM Sans', sans-serif; }
         <span class="attach-soon">próximamente</span>
       </div>
     </div>
+    <div style="height:90px;"></div><!-- spacer para que el contenido no quede bajo el botón -->
+  </div>
 
-    <div class="submit-sticky">
-      <button class="submit-btn" id="submitBtn" onclick="confirmarAlerta()" disabled>Registrar alerta</button>
-    </div>
+  <!-- botón fijo al fondo del screen, encima del bottom nav -->
+  <div class="submit-bar">
+    <button class="submit-btn" id="submitBtn" onclick="confirmarAlerta()" disabled>Registrar alerta</button>
   </div>
 
 </div>
