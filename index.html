@@ -163,12 +163,12 @@ body { font-family: 'DM Sans', sans-serif; }
 /* ── SUBMIT BUTTON ── */
 .submit-bar {
   flex-shrink: 0;
-  padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+  padding: 10px 18px 12px;
   background: var(--bg);
   border-top: 1px solid var(--border);
 }
 .submit-btn {
-  width: 100%; padding: 16px; border-radius: var(--radius-lg);
+  width: 100%; padding: 14px; border-radius: var(--radius-lg);
   background: var(--accent); border: none; color: white;
   font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
   cursor: pointer; transition: background .15s, transform .1s;
@@ -423,21 +423,17 @@ body { font-family: 'DM Sans', sans-serif; }
     </div>
 
     <div class="signal-list" id="signalList"></div>
-
-    <div class="desc-section">
-      <div class="desc-label">Descripción adicional</div>
-      <textarea class="desc-textarea" id="descTextarea" placeholder="Agrega contexto, ubicación exacta, personas involucradas..." rows="3"></textarea>
-      <div class="attach-row">
-        <div class="attach-btn">
-          <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-          Adjuntar archivo
-        </div>
-        <span class="attach-soon">próximamente</span>
-      </div>
-    </div>
   </div>
 
   <div class="submit-bar">
+    <textarea class="desc-textarea" id="descTextarea" placeholder="Descripción adicional (opcional)..." rows="2"></textarea>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin: 8px 0 10px;">
+      <div class="attach-btn">
+        <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        Adjuntar
+      </div>
+      <span class="attach-soon">próximamente</span>
+    </div>
     <button class="submit-btn" id="submitBtn" onclick="confirmarAlerta()" disabled>Registrar alerta</button>
   </div>
 
