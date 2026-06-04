@@ -154,13 +154,6 @@ body { font-family: 'DM Sans', sans-serif; }
 .attach-soon { font-size: 10px; color: var(--muted); font-style: italic; }
 
 /* ── SUBMIT BUTTON ── */
-.submit-bar {
-  padding: 14px 18px;
-  padding-bottom: calc(14px + env(safe-area-inset-bottom));
-  background: var(--bg);
-  border-top: 1px solid var(--border);
-  flex-shrink: 0;
-}
 .submit-btn {
   width: 100%; padding: 16px; border-radius: var(--radius-lg);
   background: var(--accent); border: none; color: white;
@@ -170,6 +163,19 @@ body { font-family: 'DM Sans', sans-serif; }
 }
 .submit-btn:active { background: #991111; transform: scale(.99); }
 .submit-btn:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; transform: none; }
+
+/* sticky footer dentro del scroll — visible siempre sin tapar contenido */
+.submit-sticky {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 30%);
+  padding: 16px 0 calc(8px + env(safe-area-inset-bottom));
+  margin-top: 16px;
+}
+
+/* hide bottom nav when keyboard is open */
+.keyboard-open .bottom-nav { display: none; }
+.keyboard-open .scroll { padding-bottom: 16px; }
 
 /* ── CONFIRM SCREEN ── */
 .confirm-card {
@@ -424,11 +430,12 @@ body { font-family: 'DM Sans', sans-serif; }
         <span class="attach-soon">próximamente</span>
       </div>
     </div>
+
+    <div class="submit-sticky">
+      <button class="submit-btn" id="submitBtn" onclick="confirmarAlerta()" disabled>Registrar alerta</button>
+    </div>
   </div>
 
-  <div class="submit-bar">
-    <button class="submit-btn" id="submitBtn" onclick="confirmarAlerta()" disabled>Registrar alerta</button>
-  </div>
 </div>
 
 <!-- ═══════════════════════════════════ -->
@@ -1511,6 +1518,22 @@ function toast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── TECLADO VIRTUAL ───────────────────────────────────────
+// Oculta el bottom nav cuando el teclado sube para no tapar el botón
+if (window.visualViewport) {
+  let initialHeight = window.visualViewport.height;
+  window.visualViewport.addEventListener('resize', () => {
+    const keyboardOpen = window.visualViewport.height < initialHeight * 0.85;
+    document.body.classList.toggle('keyboard-open', keyboardOpen);
+    // scroll el botón a la vista si está en pantalla de señales
+    if (keyboardOpen && currentScreen === 'screenSignals') {
+      setTimeout(() => {
+        document.getElementById('submitBtn')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  });
 }
 
 // ── SERVICE WORKER ────────────────────────────────────────
