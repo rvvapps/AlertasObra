@@ -32,7 +32,14 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); font-family:
 body { font-family: 'DM Sans', sans-serif; }
 
 /* ── SCREENS ── */
-.screen { position: fixed; inset: 0; display: flex; flex-direction: column; transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .35s; }
+.screen {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  bottom: calc(58px + env(safe-area-inset-bottom)); /* termina donde empieza el nav */
+  display: flex;
+  flex-direction: column;
+  transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .35s;
+}
 .screen.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
 .screen.slide-left { transform: translateX(-100%); opacity: 0; pointer-events: none; }
 
@@ -318,11 +325,11 @@ body { font-family: 'DM Sans', sans-serif; }
 /* ── BOTTOMNAV ── */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0;
+  height: calc(58px + env(safe-area-inset-bottom));
   display: flex; background: var(--surface);
   border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 50;
-  height: calc(58px + env(safe-area-inset-bottom));
 }
 .nav-btn {
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
@@ -334,10 +341,7 @@ body { font-family: 'DM Sans', sans-serif; }
 .nav-btn.active { color: var(--accent); }
 .nav-btn.active svg { stroke-width: 2.2; }
 
-/* todos los screens terminan antes del bottom nav */
-.screen { padding-bottom: calc(58px + env(safe-area-inset-bottom)); }
-
-/* add bottom padding to all scrollable areas so content clears the nav */
+/* scroll areas only need small bottom padding — screen already ends above nav */
 .scroll { padding-bottom: 16px; }
 
 /* ── SETUP OVERLAY ── */
