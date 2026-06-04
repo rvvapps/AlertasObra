@@ -322,6 +322,7 @@ body { font-family: 'DM Sans', sans-serif; }
   border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 50;
+  height: calc(58px + env(safe-area-inset-bottom));
 }
 .nav-btn {
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
@@ -333,10 +334,11 @@ body { font-family: 'DM Sans', sans-serif; }
 .nav-btn.active { color: var(--accent); }
 .nav-btn.active svg { stroke-width: 2.2; }
 
+/* todos los screens terminan antes del bottom nav */
+.screen { padding-bottom: calc(58px + env(safe-area-inset-bottom)); }
+
 /* add bottom padding to all scrollable areas so content clears the nav */
-.scroll { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
-/* signals screen: el botón está en el flex footer, solo necesita el nav */
-#signalsScroll { padding-bottom: 16px; }
+.scroll { padding-bottom: 16px; }
 
 /* ── SETUP OVERLAY ── */
 .setup-overlay {
