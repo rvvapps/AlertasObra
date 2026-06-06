@@ -90,15 +90,16 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);c
 .alert-table thead{position:sticky;top:41px;z-index:9;}
 .alert-table thead tr{background:#EAE6DF;}
 .alert-table th{
-  padding:6px 6px;
+  padding:6px 8px;
   font-size:10px;font-weight:600;color:var(--text2);
   text-transform:uppercase;letter-spacing:.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   border-bottom:1px solid var(--border);
   text-align:left;
 }
+.alert-table th:hover{color:var(--text);}
 .alert-table td{
-  padding:0 6px;
+  padding:0 8px;
   border-bottom:1px solid var(--border);
   height:38px;
   vertical-align:middle;
@@ -109,7 +110,6 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);c
 .alert-table tbody tr{cursor:pointer;transition:background .1s;}
 .alert-table tbody tr:hover{background:var(--surface);}
 .alert-table tbody tr.sel{background:var(--red-l);}
-/* Texto en celdas */
 .td-desc{font-size:13px;font-weight:500;color:var(--text);}
 .td-txt {font-size:12px;color:var(--text2);}
 .td-mono{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;}
@@ -374,6 +374,8 @@ let unsubscribe = null;
 let editId = null;
 let selectedId = null;
 let filters = { estado:'', criticidad:'', tipo:'', obra:'', usuario:'' };
+let sortCol  = 'creadoEn';
+let sortDir  = 'desc'; // 'asc' | 'desc'
 // Adjuntos pendientes en el formulario (antes de guardar)
 let pendingFiles = []; // [{file, name, tipo, previewUrl}]
 // Adjuntos ya subidos (al editar)
@@ -587,44 +589,67 @@ function render(){
         </div></div>`;
     }).join('');
   } else {
-    const rows = filtered.map(a=>{
+    // Ordenamiento
+    const CRIT_ORD = {'Crítica':4,'Alta':3,'Media':2,'Baja':1,'':0};
+    const EST_ORD  = {'Activa':1,'En gestión':2,'Resuelta':3,'Descartada':4};
+    const sorted = [...filtered].sort((a,b)=>{
+      let va, vb;
+      if(sortCol==='descripcion'){ va=(a.descripcion||'').toLowerCase(); vb=(b.descripcion||'').toLowerCase(); }
+      else if(sortCol==='nombre')  { va=nombreVisible(a).toLowerCase(); vb=nombreVisible(b).toLowerCase(); }
+      else if(sortCol==='creadoEn'){ va=a.creadoEn?.toMillis?.()||0; vb=b.creadoEn?.toMillis?.()||0; }
+      else if(sortCol==='obra')    { va=(a.obra||'').toLowerCase(); vb=(b.obra||'').toLowerCase(); }
+      else if(sortCol==='criticidad'){ va=CRIT_ORD[a.criticidad]||0; vb=CRIT_ORD[b.criticidad]||0; }
+      else if(sortCol==='tipo')    { va=(a.tipo||'').toLowerCase(); vb=(b.tipo||'').toLowerCase(); }
+      else if(sortCol==='estado')  { va=EST_ORD[a.estado]||0; vb=EST_ORD[b.estado]||0; }
+      if(va<vb) return sortDir==='asc'?-1:1;
+      if(va>vb) return sortDir==='asc'?1:-1;
+      return 0;
+    });
+
+    function thSort(col, label){
+      const active = sortCol===col;
+      const arrow  = active ? (sortDir==='asc'?'↑':'↓') : '<span style="opacity:.25">↕</span>';
+      return `<th style="cursor:pointer;user-select:none;white-space:nowrap" onclick="setSort('${col}')">${label} ${arrow}</th>`;
+    }
+
+    const rows = sorted.map(a=>{
       const color=critColor(a.criticidad);
       const sel=selectedId===a.id;
       const tieneAdj=a.adjuntos&&a.adjuntos.length>0;
       return `<tr class="${sel?'sel':''}" onclick="openDetail('${a.id}')">
-        <td style="padding-left:16px;vertical-align:middle"><div style="width:4px;height:24px;border-radius:2px;background:${color}"></div></td>
+        <td style="width:22px;padding:0 0 0 14px;vertical-align:middle">
+          <div style="width:4px;height:24px;border-radius:2px;background:${color}"></div>
+        </td>
         <td class="td-desc">${esc(a.descripcion||'')}</td>
         <td class="td-txt">${esc(nombreVisible(a))}</td>
         <td class="td-mono">${fmtFecha(a.creadoEn)}</td>
         <td class="td-txt">${esc(a.obra||'—')}</td>
         <td>${critBadge(a.criticidad)}</td>
         <td class="td-cat">${esc(a.tipo||'—')}</td>
-        <td>${estadoBadge(a.estado)}</td>
-        <td style="padding-right:16px;text-align:center">${tieneAdj?'📎':''}</td>
+        <td style="padding-right:14px">${estadoBadge(a.estado)}</td>
       </tr>`;
     }).join('');
+
     list.innerHTML = `<table class="alert-table">
       <colgroup>
         <col style="width:22px">
-        <col>
-        <col style="width:120px">
-        <col style="width:82px">
-        <col style="width:82px">
+        <col style="min-width:120px">
+        <col style="width:128px">
+        <col style="width:84px">
+        <col style="width:76px">
+        <col style="width:90px">
+        <col style="width:136px">
         <col style="width:88px">
-        <col style="width:132px">
-        <col style="width:82px">
-        <col style="width:22px">
       </colgroup>
       <thead><tr>
-        <th style="padding-left:16px"></th>
-        <th>Descripción</th>
-        <th>Creado por</th>
-        <th>Fecha</th>
-        <th>Obra</th>
-        <th>Criticidad</th>
-        <th>Categoría</th>
-        <th>Estado</th>
-        <th style="padding-right:16px"></th>
+        <th style="width:22px;padding-left:14px"></th>
+        ${thSort('descripcion','Descripción')}
+        ${thSort('nombre','Creado por')}
+        ${thSort('creadoEn','Fecha')}
+        ${thSort('obra','Obra')}
+        ${thSort('criticidad','Criticidad')}
+        ${thSort('tipo','Categoría')}
+        ${thSort('estado','Estado')}
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
@@ -905,6 +930,12 @@ window.sbFilter=function(k,v,el){
   filters[k]=filters[k]===v?'':v;
   el.closest('.fblock-body')?.querySelectorAll('.fopt').forEach(e=>e.classList.remove('active'));
   if(filters[k]===v) el.classList.add('active');
+  render();
+};
+
+window.setSort=function(col){
+  if(sortCol===col){ sortDir=sortDir==='asc'?'desc':'asc'; }
+  else { sortCol=col; sortDir='asc'; }
   render();
 };
 
