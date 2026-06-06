@@ -90,7 +90,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);c
 .alert-table thead{position:sticky;top:41px;z-index:9;}
 .alert-table thead tr{background:#EAE6DF;}
 .alert-table th{
-  padding:6px 8px;
+  padding:6px 6px;
   font-size:10px;font-weight:600;color:var(--text2);
   text-transform:uppercase;letter-spacing:.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -98,7 +98,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);c
   text-align:left;
 }
 .alert-table td{
-  padding:0 8px;
+  padding:0 6px;
   border-bottom:1px solid var(--border);
   height:38px;
   vertical-align:middle;
@@ -109,16 +109,6 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);c
 .alert-table tbody tr{cursor:pointer;transition:background .1s;}
 .alert-table tbody tr:hover{background:var(--surface);}
 .alert-table tbody tr.sel{background:var(--red-l);}
-/* Anchos de columnas */
-.col-bar  {width:6px;padding:0 0 0 16px!important;}
-.col-desc {width:auto;}
-.col-who  {width:120px;}
-.col-date {width:80px;}
-.col-obra {width:80px;}
-.col-crit {width:85px;}
-.col-cat  {width:130px;}
-.col-est  {width:80px;}
-.col-adj  {width:28px;padding-right:16px!important;text-align:center;}
 /* Texto en celdas */
 .td-desc{font-size:13px;font-weight:500;color:var(--text);}
 .td-txt {font-size:12px;color:var(--text2);}
@@ -602,28 +592,39 @@ function render(){
       const sel=selectedId===a.id;
       const tieneAdj=a.adjuntos&&a.adjuntos.length>0;
       return `<tr class="${sel?'sel':''}" onclick="openDetail('${a.id}')">
-        <td class="col-bar"><div style="width:4px;height:24px;border-radius:2px;background:${color}"></div></td>
-        <td class="col-desc td-desc">${esc(a.descripcion||'')}</td>
-        <td class="col-who td-txt">${esc(nombreVisible(a))}</td>
-        <td class="col-date td-mono">${fmtFecha(a.creadoEn)}</td>
-        <td class="col-obra td-txt">${esc(a.obra||'—')}</td>
-        <td class="col-crit">${critBadge(a.criticidad)}</td>
-        <td class="col-cat td-cat">${esc(a.tipo||'—')}</td>
-        <td class="col-est">${estadoBadge(a.estado)}</td>
-        <td class="col-adj">${tieneAdj?'📎':''}</td>
+        <td style="padding-left:16px;vertical-align:middle"><div style="width:4px;height:24px;border-radius:2px;background:${color}"></div></td>
+        <td class="td-desc">${esc(a.descripcion||'')}</td>
+        <td class="td-txt">${esc(nombreVisible(a))}</td>
+        <td class="td-mono">${fmtFecha(a.creadoEn)}</td>
+        <td class="td-txt">${esc(a.obra||'—')}</td>
+        <td>${critBadge(a.criticidad)}</td>
+        <td class="td-cat">${esc(a.tipo||'—')}</td>
+        <td>${estadoBadge(a.estado)}</td>
+        <td style="padding-right:16px;text-align:center">${tieneAdj?'📎':''}</td>
       </tr>`;
     }).join('');
     list.innerHTML = `<table class="alert-table">
+      <colgroup>
+        <col style="width:22px">
+        <col>
+        <col style="width:120px">
+        <col style="width:82px">
+        <col style="width:82px">
+        <col style="width:88px">
+        <col style="width:132px">
+        <col style="width:82px">
+        <col style="width:22px">
+      </colgroup>
       <thead><tr>
-        <th class="col-bar"></th>
-        <th class="col-desc">Descripción</th>
-        <th class="col-who">Creado por</th>
-        <th class="col-date">Fecha</th>
-        <th class="col-obra">Obra</th>
-        <th class="col-crit">Criticidad</th>
-        <th class="col-cat">Categoría</th>
-        <th class="col-est">Estado</th>
-        <th class="col-adj"></th>
+        <th style="padding-left:16px"></th>
+        <th>Descripción</th>
+        <th>Creado por</th>
+        <th>Fecha</th>
+        <th>Obra</th>
+        <th>Criticidad</th>
+        <th>Categoría</th>
+        <th>Estado</th>
+        <th style="padding-right:16px"></th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
