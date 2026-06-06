@@ -23,8 +23,7 @@
   --est-gestion-bg:#E6F1FB;   --est-gestion-fg:#185FA5;
   --est-resuelta-bg:#EAF3DE;  --est-resuelta-fg:#3B6D11;
   --est-descartada-bg:#EEECEA;--est-descartada-fg:#6B6963;
-  /* GRID — col-hdr y trow comparten esta variable */
-  --tgrid: 16px 5px 1.2fr 110px 76px 80px 78px 110px 76px 24px 16px;
+
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);font-size:14px;}
@@ -86,39 +85,45 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);c
 .search::placeholder{color:var(--text3);}
 
 /* TABLA */
-.col-hdr{
-  display:grid;
-  grid-template-columns:var(--tgrid);
-  padding:5px 0;
-  background:#EAE6DF;
-  border-bottom:1px solid var(--border);
+/* ── TABLA ── */
+.alert-table{width:100%;border-collapse:collapse;table-layout:fixed;}
+.alert-table thead{position:sticky;top:41px;z-index:9;}
+.alert-table thead tr{background:#EAE6DF;}
+.alert-table th{
+  padding:6px 8px;
   font-size:10px;font-weight:600;color:var(--text2);
   text-transform:uppercase;letter-spacing:.5px;
-  position:sticky;top:41px;z-index:9;
-  white-space:nowrap;
-  align-items:center;
-}
-.col-hdr>div{padding:0 4px;overflow:hidden;text-overflow:ellipsis;min-width:0;}
-
-.trow{
-  display:grid;
-  grid-template-columns:var(--tgrid);
-  padding:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   border-bottom:1px solid var(--border);
-  align-items:center;
-  cursor:pointer;
-  transition:background .1s;
-  min-height:38px;
+  text-align:left;
 }
-.trow:hover{background:var(--surface);}
-.trow.sel{background:var(--red-l);}
-
-/* Celdas de tabla */
-.tc{padding:0 4px;font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
-.tc-desc{padding:0 4px 0 8px;font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
-.tc-mono{padding:0 4px;font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;white-space:nowrap;min-width:0;}
-.tc-badge{padding:0 4px;display:flex;align-items:center;min-width:0;}
-.tc-icon{padding:0 2px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.alert-table td{
+  padding:0 8px;
+  border-bottom:1px solid var(--border);
+  height:38px;
+  vertical-align:middle;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.alert-table tbody tr{cursor:pointer;transition:background .1s;}
+.alert-table tbody tr:hover{background:var(--surface);}
+.alert-table tbody tr.sel{background:var(--red-l);}
+/* Anchos de columnas */
+.col-bar  {width:6px;padding:0 0 0 16px!important;}
+.col-desc {width:auto;}
+.col-who  {width:120px;}
+.col-date {width:80px;}
+.col-obra {width:80px;}
+.col-crit {width:85px;}
+.col-cat  {width:130px;}
+.col-est  {width:80px;}
+.col-adj  {width:28px;padding-right:16px!important;text-align:center;}
+/* Texto en celdas */
+.td-desc{font-size:13px;font-weight:500;color:var(--text);}
+.td-txt {font-size:12px;color:var(--text2);}
+.td-mono{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;}
+.td-cat {font-size:11px;color:var(--text2);}
 
 /* BADGES */
 .badge{display:inline-flex;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;white-space:nowrap;border:1px solid transparent;}
@@ -592,36 +597,36 @@ function render(){
         </div></div>`;
     }).join('');
   } else {
-    const headerRow = `<div class="col-hdr">
-      <div></div><div></div>
-      <div>Descripción</div>
-      <div>Creado por</div>
-      <div>Fecha</div>
-      <div>Obra</div>
-      <div>Criticidad</div>
-      <div>Categoría</div>
-      <div>Estado</div>
-      <div></div><div></div>
-    </div>`;
     const rows = filtered.map(a=>{
       const color=critColor(a.criticidad);
       const sel=selectedId===a.id;
       const tieneAdj=a.adjuntos&&a.adjuntos.length>0;
-      return `<div class="trow${sel?' sel':''}" onclick="openDetail('${a.id}')">
-        <div></div>
-        <div style="width:4px;height:24px;border-radius:2px;background:${color};align-self:center"></div>
-        <div class="tc-desc">${esc(a.descripcion||'')}</div>
-        <div class="tc">${esc(nombreVisible(a))}</div>
-        <div class="tc-mono">${fmtFecha(a.creadoEn)}</div>
-        <div class="tc">${esc(a.obra||'—')}</div>
-        <div class="tc-badge">${critBadge(a.criticidad)}</div>
-        <div class="tc" style="font-size:11px">${esc(a.tipo||'—')}</div>
-        <div class="tc-badge">${estadoBadge(a.estado)}</div>
-        <div class="tc-icon" title="${tieneAdj?a.adjuntos.length+' adjunto(s)':''}">${tieneAdj?'📎':''}</div>
-        <div></div>
-      </div>`;
+      return `<tr class="${sel?'sel':''}" onclick="openDetail('${a.id}')">
+        <td class="col-bar"><div style="width:4px;height:24px;border-radius:2px;background:${color}"></div></td>
+        <td class="col-desc td-desc">${esc(a.descripcion||'')}</td>
+        <td class="col-who td-txt">${esc(nombreVisible(a))}</td>
+        <td class="col-date td-mono">${fmtFecha(a.creadoEn)}</td>
+        <td class="col-obra td-txt">${esc(a.obra||'—')}</td>
+        <td class="col-crit">${critBadge(a.criticidad)}</td>
+        <td class="col-cat td-cat">${esc(a.tipo||'—')}</td>
+        <td class="col-est">${estadoBadge(a.estado)}</td>
+        <td class="col-adj">${tieneAdj?'📎':''}</td>
+      </tr>`;
     }).join('');
-    list.innerHTML = headerRow + rows;
+    list.innerHTML = `<table class="alert-table">
+      <thead><tr>
+        <th class="col-bar"></th>
+        <th class="col-desc">Descripción</th>
+        <th class="col-who">Creado por</th>
+        <th class="col-date">Fecha</th>
+        <th class="col-obra">Obra</th>
+        <th class="col-crit">Criticidad</th>
+        <th class="col-cat">Categoría</th>
+        <th class="col-est">Estado</th>
+        <th class="col-adj"></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
   }
 }
 
